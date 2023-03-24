@@ -4,6 +4,28 @@
   <meta charset="UTF-8">
   <title>Flatiron Task Lister</title>
   <link rel="stylesheet" href="./style.css">
+  <style>
+    button.delete-button {
+      background-color: rgba(255, 0, 0, 0.913);
+      border: none;
+      color: white;
+      font-size: 12px;
+      padding: 2px 5px;
+      margin-left: 10px;
+    }
+
+    .high-priority {
+      color: rgb(255, 0, 128);
+    }
+
+    .medium-priority {
+      color: rgb(8, 0, 255);
+    }
+
+    .low-priority {
+      color: green;
+    }
+  </style>
 </head>
 <body>
   <div id="main-content">
@@ -12,17 +34,79 @@
     <form id="create-task-form" action="" method="POST">
       <label for="new-task-description">Task description:</label>
       <input type="text" id="new-task-description" name="new-task-description" placeholder="description">
+
+      <label for="priority">Priority:</label>
+      <select id="priority" name="priority">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+
       <input type="submit" value="Create New Task">
     </form>
 
     <div id="list">
       <h2>My Todos</h2>
+      <div id="sort">
+        <label for="sort-direction">Sort by:</label>
+        <select id="sort-direction" name="sort-direction">
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+        <button id="sort-button">Sort</button>
+      </div>
       <ul id="tasks">
       </ul>
     </div>
 
     <script src="./src/index.js"></script>
-  </div>
+    <script>
+      const taskForm = document.querySelector('#create-task-form');
+      const taskList = document.querySelector('#tasks');
+      const sortButton = document.querySelector('#sort-button');
 
+      taskForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const newTask = document.createElement('li');
+        const taskDescription = document.querySelector('#new-task-description');
+        newTask.innerText = taskDescription.value;
+
+        
+        const prioritySelect = document.querySelector('#priority');
+        const priority = prioritySelect.value;
+        newTask.classList.add(`${priority}-priority`);
+
+        
+        const deleteButton = document.createElement('button');
+        deleteButton.classList.add('delete-button');
+        deleteButton.innerText = 'x';
+        newTask.appendChild(deleteButton);
+
+        
+        deleteButton.addEventListener('click', function() {
+          newTask.remove();
+        });
+
+        taskList.appendChild(newTask);
+        taskDescription.value = '';
+      });
+
+      sortButton.addEventListener('click', function() {
+        const sortDirection = document.querySelector('#sort-direction').value;
+        const tasks = Array.from(document.querySelectorAll('#tasks > li'));
+        tasks.sort(function(taskA, taskB) {
+          if (sortDirection === 'asc') {
+            return taskA.classList[0].localeCompare(taskB.classList[0]);
+          } else {
+            return taskB.classList[0].localeCompare(taskA.classList[0]);
+          }
+        });
+        tasks.forEach(function(task) {
+          taskList.appendChild(task);
+        });
+      });
+    </script>
+  </div>
 </body>
 </html>
+``
